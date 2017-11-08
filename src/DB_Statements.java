@@ -14,6 +14,8 @@ public class DB_Statements {
     private static Connection con = DB_Connector.connect();
     //Declare a result set
     private static ResultSet rs = null;
+    //Declare a PreparedStatement
+    private static PreparedStatement pst = null;
 
     //Method to create a new Database
     public void createNewDB(String DB_Name) {
@@ -53,13 +55,7 @@ public class DB_Statements {
     //Method to create a table
     public void createTable(String tableName) {
         //SQL Statement
-        String query = "CREATE TABLE if NOT EXISTS " + tableName +
-                "(" +
-                "id INT NOT NULL auto_increment, " +
-                "myName VARCHAR (28), " +
-                "address VARCHAR (28), " +
-                "PRIMARY KEY (id)" +
-                ")";
+        String query = "call aTable";
 
         try {
             //connection
@@ -126,12 +122,14 @@ public class DB_Statements {
     public Boolean checkLogin(String username, String password){
         boolean check = false;
 
-        String query = "SELECT * FROM thisdatabase.user " +
-                       "WHERE username = '" + username + "' " +
-                       "AND password = '" + password + "' ";
+        String query = "SELECT * FROM thisdatabase.user WHERE username = (?) AND password = (?)";
         try {
-            stmt = con.createStatement();
-            rs = stmt.executeQuery(query);
+            //Statement stmt = con.createStatement();
+            pst = con.prepareStatement(query);
+            //ResultSet rs = stmt.executeQuery(query);
+            pst.setString(1, username);
+            pst.setString(2, password);
+            rs = pst.executeQuery();
             while (rs.next()){
                 check = true;
                 System.out.println("\n--It works!--");
